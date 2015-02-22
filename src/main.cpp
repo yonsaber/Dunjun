@@ -3,6 +3,8 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 
 #include <iostream>
 #include <cmath>
@@ -46,10 +48,10 @@ int main(int argc, char** argv)
 	glCullFace(GL_BACK);
 
 	float vertices[] = {
-		+0.5f, +0.5f, 1.0f, 1.0f, 1.0f, // v0
-		-0.5f, +0.5f, 0.0f, 0.0f, 1.0f, // v1
-		+0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // v2
-		-0.5f, -0.5f, 1.0f, 0.0f, 0.0f, // v3
+		+0.5f, +0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, // v0
+		-0.5f, +0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // v1
+		+0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // v2
+		-0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // v3
 	};
 
 	// Create vertex buffer
@@ -68,14 +70,45 @@ int main(int argc, char** argv)
 	                                   "data/shaders/default.frag.glsl");
 	shaderProgram.bindAttribLocation(0, "vertPosition");
 	shaderProgram.bindAttribLocation(1, "vertColor");
+	shaderProgram.bindAttribLocation(2, "vertTexCoord");
 	shaderProgram.link();
 	shaderProgram.use();
+
+	GLuint tex;
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
+	unsigned char* image;
+	int width, height, comp;
+	image = stbi_load("data/textures/kitten.jpg", &width, &height, &comp, 0);
+
+	// Checkerboard pattern
+	//float pixels[] = {
+	//	0, 0, 0, 1, 0, 1,
+	//	1, 0, 1, 0, 0, 0,
+	//};
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	glActiveTexture(GL_TEXTURE0);
+	shaderProgram.setUniform("uniTex", 0);
+	stbi_image_free(image);
 
 	bool running = true;
 	bool fullscreen = false;
 
 	while (running)
 	{
+		{
+			int width, height;
+			glfwGetWindowSize(window, &width, &height);
+			glViewport(0, 0, width, height);
+		}
+
+
 		// Render
 		glClearColor(0.5f, 0.69f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -84,14 +117,17 @@ int main(int argc, char** argv)
 		{
 			glEnableVertexAttribArray(0); // vertPosition
 			glEnableVertexAttribArray(1); // vertColor
+			glEnableVertexAttribArray(2); // vertTexCoord
 
-			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
-			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (const GLvoid*)(2 * sizeof(float)));
+			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (const GLvoid*)0);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (const GLvoid*)(2 * sizeof(float)));
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (const GLvoid*)(5 * sizeof(float)));
 
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 			glDisableVertexAttribArray(0); // vertPosition
 			glDisableVertexAttribArray(1); // vertColor
+			glDisableVertexAttribArray(2); // vertTexCoord
 		}
 
 		// Switch buffers
