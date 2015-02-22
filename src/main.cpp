@@ -1,10 +1,9 @@
 #include <Dunjun/Common.hpp>
 #include <Dunjun/ShaderProgram.hpp>
+#include <Dunjun/Image.hpp>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
 
 #include <iostream>
 #include <cmath>
@@ -82,20 +81,12 @@ int main(int argc, char** argv)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
-	unsigned char* image;
-	int width, height, comp;
-	image = stbi_load("data/textures/kitten.jpg", &width, &height, &comp, 0);
+	Dunjun::Image image;
+	image.loadFromFile("data/textures/kitten.jpg");
 
-	// Checkerboard pattern
-	//float pixels[] = {
-	//	0, 0, 0, 1, 0, 1,
-	//	1, 0, 1, 0, 0, 0,
-	//};
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width(), image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, image.pixelPtr());
 	glActiveTexture(GL_TEXTURE0);
 	shaderProgram.setUniform("uniTex", 0);
-	stbi_image_free(image);
 
 	bool running = true;
 	bool fullscreen = false;
