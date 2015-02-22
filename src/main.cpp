@@ -1,9 +1,13 @@
 #include <Dunjun/Common.hpp>
+#include <Dunjun/ShaderProgram.hpp>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <cmath>
+#include <string>
+#include <fstream>
 
 GLOBAL const int g_windowWidth = 854;
 GLOBAL const int g_windowHeight = 480;
@@ -38,13 +42,14 @@ int main(int argc, char** argv)
 	// GLEW has to be init-ed after creating the context
 	glewInit(); // Create all OpenGL pointers
 
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
 	float vertices[] = {
-	    0.0f,  // v1
-	    0.5f,  // v1
-	    -0.5f, // v2
-	    -0.5f, // v2
-	    0.5f,  // v3
-	    -0.5f  // v3
+		+0.5f, +0.5f, 1.0f, 1.0f, 1.0f, // v0
+		-0.5f, +0.5f, 0.0f, 0.0f, 1.0f, // v1
+		+0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // v2
+		-0.5f, -0.5f, 1.0f, 0.0f, 0.0f, // v3
 	};
 
 	// Create vertex buffer
@@ -56,44 +61,15 @@ int main(int argc, char** argv)
 	             vertices,
 	             GL_STATIC_DRAW); // Add data
 
-	const char* vertexShaderText = {
-	    "#version 120\n"
-	    "\n"
-	    "attribute vec2 position;" // Input item: attribute <type> <name>
-	    "void main()"
-	    "{"
-	    "	gl_Position = vec4(position, 0.0, 1.0);"
-	    "}"};
-
-	const char* fragmentShaderText = {
-	    "#version 120\n"
-	    "\n"
-	    "void main()"
-	    "{"
-	    "	gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);"
-	    "}"};
-
-	// TODO: Seperate shader class
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderText, nullptr); // Get
-	glCompileShader(vertexShader);                               // Compile
-
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderText, nullptr);
-	glCompileShader(fragmentShader);
-
-	// Attach shaders to a shader program
-	GLuint shaderProgram =
-	    glCreateProgram(); // Connect the small shaders together
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-
-	glBindAttribLocation(
-	    shaderProgram, 0, "position"); // Before we link we can modify
-
-	glLinkProgram(shaderProgram); // Link shader program
-
-	glUseProgram(shaderProgram); // Use shader program
+	Dunjun::ShaderProgram shaderProgram;
+	shaderProgram.attachShaderFromFile(Dunjun::ShaderType::Vertex,
+	                                   "data/shaders/default.vert.glsl");
+	shaderProgram.attachShaderFromFile(Dunjun::ShaderType::Fragment,
+	                                   "data/shaders/default.frag.glsl");
+	shaderProgram.bindAttribLocation(0, "vertPosition");
+	shaderProgram.bindAttribLocation(1, "vertColor");
+	shaderProgram.link();
+	shaderProgram.use();
 
 	bool running = true;
 	bool fullscreen = false;
@@ -106,13 +82,16 @@ int main(int argc, char** argv)
 
 		// Draw things
 		{
-			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(0); // vertPosition
+			glEnableVertexAttribArray(1); // vertColor
 
-			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (const GLvoid*)(2 * sizeof(float)));
 
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-			glDisableVertexAttribArray(0);
+			glDisableVertexAttribArray(0); // vertPosition
+			glDisableVertexAttribArray(1); // vertColor
 		}
 
 		// Switch buffers
