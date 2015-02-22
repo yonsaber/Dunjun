@@ -1,10 +1,10 @@
 #ifndef DUNJUN_SHADERPROGRAM_HPP
 #define DUNJUN_SHADERPROGRAM_HPP
 
-#include <Dunjun/common.hpp>
+#include <Dunjun/Common.hpp>
+#include <Dunjun/NonCopyable.hpp>
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <Dunjun/OpenGL.hpp>
 
 #include <string>
 
@@ -16,7 +16,7 @@ enum class ShaderType
 	Fragment
 };
 
-class ShaderProgram
+class ShaderProgram : public NonCopyable
 {
 public:
 	ShaderProgram();          // Constructor
@@ -45,8 +45,8 @@ public:
 	void setUniform(const GLchar* name, unsigned int x);
 	void setUniform(const GLchar* name, bool x);
 
-	inline GLuint object() const { return m_object; }
-	inline const std::string& errorLog() const;
+	inline GLuint getObject() const { return m_object; }
+	inline const std::string& getErrorLog() const;
 
 private:
 	GLuint m_object;

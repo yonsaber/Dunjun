@@ -1,8 +1,10 @@
+#include <Dunjun/OpenGL.hpp>
 #include <Dunjun/Common.hpp>
 #include <Dunjun/ShaderProgram.hpp>
 #include <Dunjun/Image.hpp>
+#include <Dunjun/Texture.hpp>
 
-#include <GL/glew.h>
+#include <Dunjun/OpenGL.hpp>
 #include <GLFW/glfw3.h>
 
 #include <iostream>
@@ -47,10 +49,10 @@ int main(int argc, char** argv)
 	glCullFace(GL_BACK);
 
 	float vertices[] = {
-		+0.5f, +0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, // v0
-		-0.5f, +0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // v1
-		+0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // v2
-		-0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // v3
+	    +0.5f, +0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, // v0
+	    -0.5f, +0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // v1
+	    +0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, // v2
+	    -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // v3
 	};
 
 	// Create vertex buffer
@@ -73,19 +75,10 @@ int main(int argc, char** argv)
 	shaderProgram.link();
 	shaderProgram.use();
 
-	GLuint tex;
-	glGenTextures(1, &tex);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
-	Dunjun::Image image;
-	image.loadFromFile("data/textures/kitten.jpg");
+	Dunjun::Texture tex;
+	tex.loadFromFile("data/textures/kitten.jpg");
+	tex.bind(0);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width(), image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, image.pixelPtr());
-	glActiveTexture(GL_TEXTURE0);
 	shaderProgram.setUniform("uniTex", 0);
 
 	bool running = true;
@@ -99,7 +92,6 @@ int main(int argc, char** argv)
 			glViewport(0, 0, width, height);
 		}
 
-
 		// Render
 		glClearColor(0.5f, 0.69f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -110,9 +102,20 @@ int main(int argc, char** argv)
 			glEnableVertexAttribArray(1); // vertColor
 			glEnableVertexAttribArray(2); // vertTexCoord
 
-			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (const GLvoid*)0);
-			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (const GLvoid*)(2 * sizeof(float)));
-			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (const GLvoid*)(5 * sizeof(float)));
+			glVertexAttribPointer(
+			    0, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (const GLvoid*)0);
+			glVertexAttribPointer(1,
+			                      3,
+			                      GL_FLOAT,
+			                      GL_FALSE,
+			                      7 * sizeof(float),
+			                      (const GLvoid*)(2 * sizeof(float)));
+			glVertexAttribPointer(2,
+			                      2,
+			                      GL_FLOAT,
+			                      GL_FALSE,
+			                      7 * sizeof(float),
+			                      (const GLvoid*)(5 * sizeof(float)));
 
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 

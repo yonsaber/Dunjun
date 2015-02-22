@@ -11,38 +11,32 @@ public:
 	enum Format
 	{
 		Format_Greyscale = 1,
-		Format_GreyscaleAplha = 2,
+		Format_GreyscaleAlpha = 2,
 		Format_RGB = 3,
 		Format_RGBA = 4,
 	};
 
 	Image();
-	Image(UInt32 width,
-	      UInt32 height,
-	      Format format,
-	      const UInt8* pixels = nullptr);
+	Image(u32 width, u32 height, Format format, const u8* pixels = nullptr);
 	Image(const Image& other);
 	Image& operator=(const Image& other);
 	virtual ~Image();
 
 	bool loadFromFile(const char* filename);
-	bool loadFromMemory(UInt32 width,
-	                    UInt32 height,
-	                    Format format,
-	                    const UInt8* pixels);
+	bool loadFromMemory(u32 width, u32 height, Format format, const u8* pixels);
 
-	inline UInt32 width() const { return m_width; }
-	inline UInt32 height() const { return m_height; }
-	inline Format format() const { return m_format; };
-	inline UInt8* pixelPtr() const { return m_pixels; };
+	inline u32 getWidth() const { return m_width; }
+	inline u32 getHeight() const { return m_height; }
+	inline Format getFormat() const { return m_format; };
+	inline u8* getPixelPtr() const { return m_pixels; };
 
-	UInt8* getPixel(UInt32 column, UInt32 row) const;
-	void getPixel(UInt32 column, UInt32 row, const UInt32* pixel);
+	u8* getPixel(u32 column, u32 row) const;
+	void getPixel(u32 column, u32 row, const u32* pixel);
 
 	void flipVertaically();
-	//void rotate90CCW();
+	// void rotate90CCW();
 
-	//void copyRectFromImage(const Image& src,
+	// void copyRectFromImage(const Image& src,
 	//                       UInt32 srcCol,
 	//                       UInt32 srcRow,
 	//                       UInt32 destCol,
@@ -52,9 +46,9 @@ public:
 
 private:
 	Format m_format;
-	UInt32 m_width;
-	UInt32 m_height;
-	UInt8* m_pixels;
+	u32 m_width;
+	u32 m_height;
+	u8* m_pixels;
 };
 } // namespace Dunjun
 
