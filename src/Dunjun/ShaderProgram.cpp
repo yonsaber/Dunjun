@@ -40,7 +40,13 @@ ShaderProgram::ShaderProgram()
 {
 	m_object = glCreateProgram();
 }
-ShaderProgram::~ShaderProgram() { glDeleteProgram(m_object); }
+ShaderProgram::~ShaderProgram()
+{
+	if (m_object)
+	{
+		glDeleteProgram(m_object);
+	}
+}
 
 bool ShaderProgram::attachShaderFromFile(ShaderType type,
                                          const std::string& filename)
@@ -52,6 +58,11 @@ bool ShaderProgram::attachShaderFromFile(ShaderType type,
 bool ShaderProgram::attachShaderFromMemory(ShaderType type,
                                            const std::string& source)
 {
+	if (!m_object)
+	{
+		m_object = glCreateProgram();
+	}
+
 	const char* shaderSource = source.c_str();
 	GLuint shader;
 
@@ -66,6 +77,30 @@ bool ShaderProgram::attachShaderFromMemory(ShaderType type,
 
 	glShaderSource(shader, 1, &shaderSource, nullptr);
 	glCompileShader(shader);
+
+	GLint status;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+
+	if (status == GL_FALSE)
+	{
+		std::string msg("Compile failure in shader:\n");
+
+		GLint infoLogLength;
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
+		char* strInfoLog = new char[infoLogLength + 1];
+		glGetShaderInfoLog(shader, infoLogLength, nullptr, strInfoLog);
+		msg.append(strInfoLog);
+		delete[] strInfoLog;
+
+		msg.append("\n");
+
+		m_errorLog.append(msg);
+
+		glDeleteShader(shader);
+
+		return false;
+	}
+
 	glAttachShader(m_object, shader);
 
 	return true; // TODO: Change
@@ -100,6 +135,30 @@ bool ShaderProgram::link()
 	if (!m_linked)
 	{
 		glLinkProgram(m_object);
+
+		GLint status;
+		glGetProgramiv(m_object, GL_LINK_STATUS, &status);
+
+		if (status == GL_FALSE)
+		{
+			std::string msg("Program linking failure: \n");
+
+			GLint infoLogLength;
+			glGetProgramiv(m_object, GL_INFO_LOG_LENGTH, &infoLogLength);
+			char* strInfoLog = new char[infoLogLength + 1];
+			glGetProgramInfoLog(m_object, infoLogLength, NULL, strInfoLog);
+			msg.append(strInfoLog);
+			delete[] strInfoLog;
+
+			msg.append("\n");
+			m_errorLog.append(msg);
+
+			glDeleteProgram(m_object);
+			m_object = 0;
+
+			m_linked = false;
+			return m_linked;
+		}
 
 		m_linked = true;
 	}

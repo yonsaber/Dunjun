@@ -46,7 +46,7 @@ public:
 	void setUniform(const GLchar* name, bool x);
 
 	inline GLuint getObject() const { return m_object; }
-	inline const std::string& getErrorLog() const;
+	inline const std::string& getErrorLog() const { return m_errorLog; };
 
 private:
 	GLuint m_object;
