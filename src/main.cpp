@@ -7,6 +7,7 @@
 #include <Dunjun/Clock.hpp>
 #include <Dunjun/TickCounter.hpp>
 
+#include <Dunjun/Color.hpp>
 #include <Dunjun/Math.hpp>
 
 #include <Dunjun/OpenGL.hpp>
@@ -20,6 +21,13 @@
 
 GLOBAL const int g_windowWidth = 854;
 GLOBAL const int g_windowHeight = 480;
+
+struct Vertex
+{
+	Dunjun::Vector2 position;
+	Dunjun::Color color;
+	Dunjun::Vector2 texCoord;
+};
 
 INTERNAL void glfwHints()
 {
@@ -40,20 +48,24 @@ INTERNAL void render()
 	glEnableVertexAttribArray(1); // vertColor
 	glEnableVertexAttribArray(2); // vertTexCoord
 
-	glVertexAttribPointer(
-	    0, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (const GLvoid*)0);
-	glVertexAttribPointer(1,
-	                      3,
+	glVertexAttribPointer(0,
+	                      2,
 	                      GL_FLOAT,
 	                      GL_FALSE,
-	                      7 * sizeof(float),
-	                      (const GLvoid*)(2 * sizeof(float)));
+	                      sizeof(Vertex), // Stride
+	                      (const GLvoid*)0);
+	glVertexAttribPointer(1,
+	                      4,
+	                      GL_UNSIGNED_BYTE,
+	                      GL_TRUE,
+	                      sizeof(Vertex), // Stride
+						  (const GLvoid*)(sizeof(Dunjun::Vector2)));
 	glVertexAttribPointer(2,
 	                      2,
 	                      GL_FLOAT,
 	                      GL_FALSE,
-	                      7 * sizeof(float),
-	                      (const GLvoid*)(5 * sizeof(float)));
+	                      sizeof(Vertex), // Stride
+						  (const GLvoid*)(sizeof(Dunjun::Vector2) + sizeof(Dunjun::Color)));
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -100,12 +112,6 @@ INTERNAL void handleInput(GLFWwindow* window, bool* running, bool* fullscreen)
 	}*/
 }
 
-struct Vertex {
-	Dunjun::Vector2 position;
-	Dunjun::Vector3 color;
-	Dunjun::Vector2 texCoord;
-};
-
 int main(int argc, char** argv)
 {
 	GLFWwindow* window; // Window pointer
@@ -134,10 +140,10 @@ int main(int argc, char** argv)
 	glCullFace(GL_BACK);
 
 	Vertex vertices[] = {
-		{ { +0.5f, +0.5f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f } }, // v0
-		{ { -0.5f, +0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } }, // v1
-		{ { +0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } }, // v2
-		{ { -0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f } }, // v3
+	    {{+0.5f, +0.5f}, {255, 255, 255, 255}, {1.0f, 0.0f}}, // v0
+	    {{-0.5f, +0.5f}, {255, 0, 0, 255}, {0.0f, 0.0f}},     // v1
+	    {{+0.5f, -0.5f}, {0, 255, 0, 255}, {1.0f, 1.0f}},     // v2
+	    {{-0.5f, -0.5f}, {0, 0, 255, 255}, {0.0f, 1.0f}},     // v3
 	};
 
 	// Create vertex buffer

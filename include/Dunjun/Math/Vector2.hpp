@@ -105,16 +105,29 @@ struct Vector2
 	};
 };
 
-inline Vector2 operator*(f32 scalar, const Vector2& vector) { return vector * scalar; }
+inline Vector2 operator*(f32 scalar, const Vector2& vector)
+{
+	return vector * scalar;
+}
 
-inline f32 dot(const Vector2& vec1, const Vector2& vec2) { return vec1.x * vec2.x + vec1.y * vec2.y; }
+inline f32 dot(const Vector2& vec1, const Vector2& vec2)
+{
+	return vec1.x * vec2.x + vec1.y * vec2.y;
+}
+
+inline f32 cross(const Vector2& vec1, const Vector2& vec2)
+{
+	return vec1.x * vec2.y - vec2.x * vec1.y;
+}
 
 inline f32 lengthSquared(const Vector2& vec) { return dot(vec, vec); }
 
 inline f32 length(const Vector2& vec) { return lengthSquared(vec); }
 
-inline Vector2 normalized(const Vector2& vec) { return vec * (1.0f / length(vec)); }
+inline Vector2 normalized(const Vector2& vec)
+{
+	return vec * (1.0f / length(vec));
+}
 
 } // namespace Dunjun
-
 #endif
