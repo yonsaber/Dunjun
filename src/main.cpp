@@ -4,6 +4,11 @@
 #include <Dunjun/Image.hpp>
 #include <Dunjun/Texture.hpp>
 
+#include <Dunjun/Clock.hpp>
+#include <Dunjun/TickCounter.hpp>
+
+#include <Dunjun/Math.hpp>
+
 #include <Dunjun/OpenGL.hpp>
 #include <GLFW/glfw3.h>
 
@@ -15,53 +20,6 @@
 
 GLOBAL const int g_windowWidth = 854;
 GLOBAL const int g_windowHeight = 480;
-
-// TODO MOVE
-class Clock
-{
-public:
-	double getElapsedTime() const { return glfwGetTime() - m_startTime; }
-
-	float restart()
-	{
-		double now = glfwGetTime();
-		double elapsed = now - m_startTime;
-		m_startTime = now;
-
-		return elapsed;
-	}
-
-private:
-	double m_startTime = glfwGetTime();
-};
-
-// TODO MOVE
-class TickCounter
-{
-public:
-	bool update(double frequency)
-	{
-		bool reset = false;
-		if (m_clock.getElapsedTime() >= frequency)
-		{
-			m_tickRate = m_tick / frequency;
-			m_tick = 0;
-			reset = true;
-			m_clock.restart();
-		}
-
-		m_tick++;
-
-		return reset;
-	}
-
-	inline std::size_t getTickRate() const { return m_tickRate; };
-
-private:
-	std::size_t m_tick = 0;
-	std::size_t m_tickRate = 0;
-	Clock m_clock;
-};
 
 INTERNAL void glfwHints()
 {
@@ -142,6 +100,12 @@ INTERNAL void handleInput(GLFWwindow* window, bool* running, bool* fullscreen)
 	}*/
 }
 
+struct Vertex {
+	Dunjun::Vector2 position;
+	Dunjun::Vector3 color;
+	Dunjun::Vector2 texCoord;
+};
+
 int main(int argc, char** argv)
 {
 	GLFWwindow* window; // Window pointer
@@ -169,11 +133,11 @@ int main(int argc, char** argv)
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	float vertices[] = {
-	    +0.5f, +0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, // v0
-	    -0.5f, +0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // v1
-	    +0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, // v2
-	    -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // v3
+	Vertex vertices[] = {
+		{ { +0.5f, +0.5f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f } }, // v0
+		{ { -0.5f, +0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } }, // v1
+		{ { +0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } }, // v2
+		{ { -0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f } }, // v3
 	};
 
 	// Create vertex buffer
@@ -215,7 +179,8 @@ int main(int argc, char** argv)
 	bool running = true;
 	bool fullscreen = false;
 
-	TickCounter tc;
+	Dunjun::TickCounter tc;
+	Dunjun::Clock frameClock;
 
 	while (running)
 	{
@@ -225,7 +190,7 @@ int main(int argc, char** argv)
 			glViewport(0, 0, width, height);
 		}
 
-		if (tc.update(1))
+		if (tc.update(0.5))
 		{
 			std::cout << tc.getTickRate() << std::endl;
 			std::stringstream ss;
@@ -241,6 +206,10 @@ int main(int argc, char** argv)
 		glfwPollEvents();
 
 		handleInput(window, &running, &fullscreen);
+
+		while (frameClock.getElapsedTime() < 1.0 / 240)
+			;
+		frameClock.restart();
 	}
 
 	glfwDestroyWindow(window);
