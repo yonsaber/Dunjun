@@ -39,6 +39,8 @@ struct Vector3
 	{
 	}
 
+	Vector3(const Vector3& other) = default;
+
 	explicit Vector3(const Vector2& vec, f32 z)
 	: x(vec.x)
 	, y(vec.y)

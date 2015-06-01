@@ -38,12 +38,7 @@ INTERNAL void glfwHints()
 
 INTERNAL void render()
 {
-	// Render
-	glClearColor(0.5f, 0.69f, 1.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
 	// Draw things
-
 	glEnableVertexAttribArray(0); // vertPosition
 	glEnableVertexAttribArray(1); // vertColor
 	glEnableVertexAttribArray(2); // vertTexCoord
@@ -85,31 +80,31 @@ INTERNAL void handleInput(GLFWwindow* window, bool* running, bool* fullscreen)
 
 	/*if (glfwGetKey(window, GLFW_KEY_F11))
 	{
-	    *fullscreen = !fullscreen;
+	*fullscreen = !fullscreen;
 
-	    GLFWwindow* newWindow;
-	    glfwHints();
-	    if (*fullscreen)
-	    {
-	        const GLFWvidmode* videoMode = glfwGetVideoMode(
-	            glfwGetPrimaryMonitor()); // Fetch the video mode of the
-	        // primary display
-	        newWindow =
-	            glfwCreateWindow(videoMode->width,
-	                             videoMode->height,
-	                             "Dunjun",
-	                             glfwGetPrimaryMonitor(),
-	                             window); // Reference old OpenGL context
-	    }
-	    else
-	    {
-	        newWindow = glfwCreateWindow(
-	            g_windowWidth, g_windowHeight, "Dunjun", nullptr, nullptr);
-	    }
+	GLFWwindow* newWindow;
+	glfwHints();
+	if (*fullscreen)
+	{
+	const GLFWvidmode* videoMode = glfwGetVideoMode(
+	glfwGetPrimaryMonitor()); // Fetch the video mode of the
+	// primary display
+	newWindow =
+	glfwCreateWindow(videoMode->width,
+	videoMode->height,
+	"Dunjun",
+	glfwGetPrimaryMonitor(),
+	window); // Reference old OpenGL context
+	}
+	else
+	{
+	newWindow = glfwCreateWindow(
+	g_windowWidth, g_windowHeight, "Dunjun", nullptr, nullptr);
+	}
 
-	    glfwDestroyWindow(window);
-	    window = newWindow;
-	    glfwMakeContextCurrent(window);
+	glfwDestroyWindow(window);
+	window = newWindow;
+	glfwMakeContextCurrent(window);
 	}*/
 }
 
@@ -175,7 +170,7 @@ int main(int argc, char** argv)
 	{
 		throw std::runtime_error(shaderProgram.getErrorLog());
 	}
-	shaderProgram.use();
+	// shaderProgram.use();
 
 	Dunjun::Texture tex;
 	tex.loadFromFile("data/textures/kitten.jpg");
@@ -197,6 +192,20 @@ int main(int argc, char** argv)
 			glViewport(0, 0, width, height);
 		}
 
+		glClearColor(0.5f, 0.69f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		shaderProgram.use();
+
+		Dunjun::Matrix4 mat = Dunjun::translate({0.5f, 0.5f, 0.0f}) *
+		                      Dunjun::rotate(3.14f / 3.0f, {0, 0, 1});
+
+		shaderProgram.setUniform("uniModel", mat);
+
+		render();
+
+		shaderProgram.stopUsing();
+
 		if (tc.update(0.5))
 		{
 			std::cout << tc.getTickRate() << std::endl;
@@ -204,8 +213,6 @@ int main(int argc, char** argv)
 			ss << "Dunjun - " << 1000.0 / tc.getTickRate() << " ms";
 			glfwSetWindowTitle(window, ss.str().c_str());
 		}
-
-		render();
 
 		// Switch buffers
 		glfwSwapBuffers(window);

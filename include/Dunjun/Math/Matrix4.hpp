@@ -34,6 +34,8 @@ public:
 	{
 	}
 
+	Matrix4(const Matrix4& other) = default;
+
 	Vector4& operator[](usize index) { return data[index]; }
 	const Vector4& operator[](usize index) const { return data[index]; }
 
@@ -84,10 +86,10 @@ public:
 		const Vector4 srcA2 = m1[2];
 		const Vector4 srcA3 = m1[3];
 
-		const Vector4 srcB0 = m1[0];
-		const Vector4 srcB1 = m1[1];
-		const Vector4 srcB2 = m1[2];
-		const Vector4 srcB3 = m1[3];
+		const Vector4 srcB0 = m2[0];
+		const Vector4 srcB1 = m2[1];
+		const Vector4 srcB2 = m2[2];
+		const Vector4 srcB3 = m2[3];
 
 		Matrix4 result;
 		result[0] = srcA0 * srcB0[0] + srcA1 * srcB0[1] + srcA2 * srcB0[2] +
@@ -159,7 +161,7 @@ public:
 
 		for (usize i = 0; i < 4; i++)
 		{
-			for (usize j = 0; j < 4; i++)
+			for (usize j = 0; j < 4; j++)
 			{
 				result[i][j] = data[j][i];
 			}
@@ -218,7 +220,8 @@ public:
 		Vector4 signB(-1, +1, -1, +1);
 		Matrix4 inverse(inv0 * signA, inv1 * signB, inv2 * signA, inv3 * signB);
 
-		Vector4 row0(inverse[0][0], inverse[1][0], inverse[2][0], inverse[3][0]);
+		Vector4 row0(
+		    inverse[0][0], inverse[1][0], inverse[2][0], inverse[3][0]);
 
 		Vector4 dot0(m[0] * row0);
 		f32 dot1 = (dot0.x + dot0.y) + (dot0.z + dot0.w);
@@ -275,7 +278,8 @@ public:
 		Vector4 signB(-1, +1, -1, +1);
 		Matrix4 inverse(inv0 * signA, inv1 * signB, inv2 * signA, inv3 * signB);
 
-		Vector4 row0(inverse[0][0], inverse[1][0], inverse[2][0], inverse[3][0]);
+		Vector4 row0(
+		    inverse[0][0], inverse[1][0], inverse[2][0], inverse[3][0]);
 
 		Vector4 dot0(m[0] * row0);
 		f32 dot1 = (dot0.x + dot0.y) + (dot0.z + dot0.w);
@@ -288,30 +292,13 @@ public:
 	std::array<Vector4, 4> data;
 };
 
-Matrix4 operator*(f32 scalar, const Matrix4& m)
-{
-	Matrix4 mat;
-	for (usize i = 0; i < 4; i++)
-	{
-		mat[i] = m[i] * scalar;
-	}
-	return mat;
-}
+inline Matrix4 operator*(f32 scalar, const Matrix4& m) { return m * scalar; }
 
-inline Matrix4 transpose(const Matrix4& m)
-{
-	return m.transpose();
-}
+inline Matrix4 transpose(const Matrix4& m) { return m.transpose(); }
 
-inline f32 determinant(const Matrix4& m)
-{
-	return m.determinant();
-}
+inline f32 determinant(const Matrix4& m) { return m.determinant(); }
 
-inline Matrix4 inverse(const Matrix4& m)
-{
-	m.inverse();
-}
+inline Matrix4 inverse(const Matrix4& m) { m.inverse(); }
 
 inline Matrix4 hadamardProduct(const Matrix4& a, const Matrix4& b)
 {

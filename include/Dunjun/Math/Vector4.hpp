@@ -43,6 +43,8 @@ struct Vector4
 	{
 	}
 
+	Vector4(const Vector4& other) = default;
+
 	explicit Vector4(const Vector3& vec, f32 w)
 	: x(vec.x)
 	, y(vec.y)

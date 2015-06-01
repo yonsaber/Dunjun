@@ -1,10 +1,12 @@
 #ifndef DUNJUN_SHADERPROGRAM_HPP
 #define DUNJUN_SHADERPROGRAM_HPP
 
-#include <Dunjun/Common.hpp>
+#include <Dunjun/OpenGL.hpp>
 #include <Dunjun/NonCopyable.hpp>
 
-#include <Dunjun/OpenGL.hpp>
+#include <Dunjun/Common.hpp>
+
+#include <Dunjun/Math/Matrix4.hpp>
 
 #include <string>
 
@@ -32,21 +34,25 @@ public:
 	bool link();     // Link a shader
 	bool isLinked(); // Link a shader
 
-	void bindAttribLocation(GLuint location, const char* name);
+	void bindAttribLocation(GLuint location, const GLchar* name);
 
 	GLint getAttribLocation(const GLchar* name);
 	GLint getUniformLocation(const GLchar* name);
 
-	void setUniform(const GLchar* name, float x);
-	void setUniform(const GLchar* name, float x, float y);
-	void setUniform(const GLchar* name, float x, float y, float z);
-	void setUniform(const GLchar* name, float x, float y, float z, float w);
-	void setUniform(const GLchar* name, int x);
-	void setUniform(const GLchar* name, unsigned int x);
+	void setUniform(const GLchar* name, f32 x);
+	void setUniform(const GLchar* name, f32 x, f32 y);
+	void setUniform(const GLchar* name, f32 x, f32 y, f32 z);
+	void setUniform(const GLchar* name, f32 x, f32 y, f32 z, f32 w);
+	void setUniform(const GLchar* name, u32 x);
+	void setUniform(const GLchar* name, i32 x);
 	void setUniform(const GLchar* name, bool x);
+	void setUniform(const GLchar* name, const Vector2& v);
+	void setUniform(const GLchar* name, const Vector3& v);
+	void setUniform(const GLchar* name, const Vector4& v);
+	void setUniform(const GLchar* name, const Matrix4& m);
 
 	inline GLuint getObject() const { return m_object; }
-	inline const std::string& getErrorLog() const { return m_errorLog; };
+	inline const std::string& getErrorLog() const { return m_errorLog; }
 
 private:
 	GLuint m_object;
