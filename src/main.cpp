@@ -59,13 +59,14 @@ INTERNAL void render()
 	                      GL_UNSIGNED_BYTE,
 	                      GL_TRUE,
 	                      sizeof(Vertex), // Stride
-						  (const GLvoid*)(sizeof(Dunjun::Vector2)));
-	glVertexAttribPointer(2,
-	                      2,
-	                      GL_FLOAT,
-	                      GL_FALSE,
-	                      sizeof(Vertex), // Stride
-						  (const GLvoid*)(sizeof(Dunjun::Vector2) + sizeof(Dunjun::Color)));
+	                      (const GLvoid*)(sizeof(Dunjun::Vector2)));
+	glVertexAttribPointer(
+	    2,
+	    2,
+	    GL_FLOAT,
+	    GL_FALSE,
+	    sizeof(Vertex), // Stride
+	    (const GLvoid*)(sizeof(Dunjun::Vector2) + sizeof(Dunjun::Color)));
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 

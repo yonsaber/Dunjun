@@ -2,6 +2,7 @@
 #define DUNJUN_MATH_VECTOR3_HPP
 
 #include <Dunjun/Types.hpp>
+#include <iostream>
 #include <cmath>
 
 #include <Dunjun/Math/Vector2.hpp>
@@ -48,6 +49,21 @@ struct Vector3
 	f32& operator[](usize index) { return data[index]; }
 	const f32& operator[](usize index) const { return data[index]; }
 
+	bool operator==(const Vector3& other) const
+	{
+		for (usize i = 0; i < 3; i++)
+		{
+			if (data[i] != other.data[i])
+			{
+				return false;
+			}
+
+			return true;
+		}
+	}
+
+	bool operator!=(const Vector3& other) const { return !operator==(other); }
+
 	Vector3 operator+(const Vector3& other) const
 	{
 		return Vector3(x + other.x, y + other.y, z + other.z);
@@ -66,6 +82,19 @@ struct Vector3
 	Vector3 operator/(f32 scalar) const
 	{
 		return Vector3(x / scalar, y / scalar, z / scalar);
+	}
+
+	// Hardmard Product
+	Vector3 operator*(Vector3& other) const
+	{
+		Vector3 result;
+
+		for (usize i = 0; i < 4; i++)
+		{
+			result[i] = data[i] * other.data[i];
+		}
+
+		return result;
 	}
 
 	Vector3& operator+=(const Vector3& other)
@@ -147,6 +176,12 @@ inline f32 length(const Vector3& vec) { return lengthSquared(vec); }
 inline Vector3 normalized(const Vector3& vec)
 {
 	return vec * (1.0f / length(vec));
+}
+
+inline std::ostream& operator<<(std::ostream& os, const Vector3& vec)
+{
+	return os << "Vector3(" << vec[0] << ", " << vec[1] << ", " << vec[2]
+	          << ")";
 }
 
 } // namespace Dunjun
