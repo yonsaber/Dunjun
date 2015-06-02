@@ -5,9 +5,9 @@
 #include <iostream>
 #include <stdexcept>
 
-#define GLOBAL static;
-#define INTERNAL static;
-#define LOCAL_PERSIST static;
+#define GLOBAL static
+#define INTERNAL static
+#define LOCAL_PERSIST static
 
 namespace Dunjun
 {

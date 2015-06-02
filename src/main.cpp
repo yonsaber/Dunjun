@@ -22,8 +22,6 @@
 GLOBAL const int g_windowWidth = 854;
 GLOBAL const int g_windowHeight = 480;
 
-GLOBAL const Dunjun::f32 TAU = 6.28318530718f;
-
 struct Vertex
 {
 	Dunjun::Vector2 position;
@@ -138,10 +136,10 @@ int main(int argc, char** argv)
 	// glCullFace(GL_BACK);
 
 	Vertex vertices[] = {
-	    {{+0.5f, +0.5f}, {255, 255, 255, 255}, {1.0f, 0.0f}}, // v0
-	    {{-0.5f, +0.5f}, {255, 0, 0, 255}, {0.0f, 0.0f}},     // v1
-	    {{+0.5f, -0.5f}, {0, 255, 0, 255}, {1.0f, 1.0f}},     // v2
-	    {{-0.5f, -0.5f}, {0, 0, 255, 255}, {0.0f, 1.0f}},     // v3
+	    {{+0.5f, +0.5f}, {0xFF, 0xFF, 0xFF, 0xFF}, {1.0f, 1.0f}}, // v0
+	    {{-0.5f, +0.5f}, {0xFF, 0x00, 0x00, 0xFF}, {0.0f, 1.0f}}, // v1
+	    {{+0.5f, -0.5f}, {0x00, 0xFF, 0x00, 0xFF}, {1.0f, 0.0f}}, // v2
+	    {{-0.5f, -0.5f}, {0x00, 0x00, 0xFF, 0xFF}, {0.0f, 0.0f}}, // v3
 	};
 
 	// Create vertex buffer
@@ -165,9 +163,9 @@ int main(int argc, char** argv)
 	{
 		throw std::runtime_error(shaderProgram.getErrorLog());
 	}
-	shaderProgram.bindAttribLocation(0, "vertPosition");
-	shaderProgram.bindAttribLocation(1, "vertColor");
-	shaderProgram.bindAttribLocation(2, "vertTexCoord");
+	shaderProgram.bindAttribLocation(0, "a_position");
+	shaderProgram.bindAttribLocation(1, "a_color");
+	shaderProgram.bindAttribLocation(2, "a_texCoord");
 	if (!shaderProgram.link())
 	{
 		throw std::runtime_error(shaderProgram.getErrorLog());
@@ -178,7 +176,7 @@ int main(int argc, char** argv)
 	tex.loadFromFile("data/textures/kitten.jpg");
 	tex.bind(0);
 
-	shaderProgram.setUniform("uniTex", 0);
+	shaderProgram.setUniform("u_tex", 0);
 
 	bool running = true;
 	bool fullscreen = false;
@@ -199,8 +197,7 @@ int main(int argc, char** argv)
 		{
 			using namespace Dunjun;
 
-			Matrix4 model =
-			    rotate(Radian(glfwGetTime()) * TAU / 6.0f, {0, 1, 0});
+			Matrix4 model = rotate(Degree(glfwGetTime()) * 60.0f, {0, 1, 0});
 			Matrix4 view =
 			    lookAt({1.0f, 2.0f, 4.0f}, {0.0f, 0.0f, 0.0f}, {0, 1, 0});
 			Matrix4 proj = perspective(
@@ -208,8 +205,8 @@ int main(int argc, char** argv)
 
 			Matrix4 camera = proj * view;
 
-			shaderProgram.setUniform("uniCamera", camera);
-			shaderProgram.setUniform("uniModel", model);
+			shaderProgram.setUniform("u_camera", camera);
+			shaderProgram.setUniform("u_model", model);
 		}
 		render();
 

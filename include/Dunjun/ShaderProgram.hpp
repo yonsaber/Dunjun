@@ -8,6 +8,8 @@
 
 #include <Dunjun/Math/Matrix4.hpp>
 
+#include <map>
+
 #include <string>
 
 namespace Dunjun
@@ -58,6 +60,9 @@ private:
 	GLuint m_object;
 	bool m_linked;
 	std::string m_errorLog;
+
+	std::map<const GLchar*, GLint> m_attribLocations;
+	std::map<const GLchar*, GLint> m_uniformLocations;
 };
 } // namespace Dunjun
 
