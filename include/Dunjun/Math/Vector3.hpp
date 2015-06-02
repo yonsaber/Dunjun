@@ -91,7 +91,7 @@ struct Vector3
 	{
 		Vector3 result;
 
-		for (usize i = 0; i < 4; i++)
+		for (usize i = 0; i < 3; i++)
 		{
 			result[i] = data[i] * other.data[i];
 		}
@@ -112,7 +112,7 @@ struct Vector3
 	{
 		x -= other.x;
 		y -= other.y;
-		z += other.z;
+		z -= other.z;
 
 		return *this;
 	}
@@ -173,9 +173,9 @@ inline Vector3 cross(const Vector3& vec1, const Vector3& vec2)
 
 inline f32 lengthSquared(const Vector3& vec) { return dot(vec, vec); }
 
-inline f32 length(const Vector3& vec) { return lengthSquared(vec); }
+inline f32 length(const Vector3& vec) { return std::sqrtf(lengthSquared(vec)); }
 
-inline Vector3 normalized(const Vector3& vec)
+inline Vector3 normalize(const Vector3& vec)
 {
 	return vec * (1.0f / length(vec));
 }

@@ -78,7 +78,7 @@ struct Vector2
 	{
 		Vector2 result;
 
-		for (usize i = 0; i < 4; i++)
+		for (usize i = 0; i < 2; i++)
 		{
 			result[i] = data[i] * other.data[i];
 		}
@@ -153,9 +153,9 @@ inline f32 cross(const Vector2& vec1, const Vector2& vec2)
 
 inline f32 lengthSquared(const Vector2& vec) { return dot(vec, vec); }
 
-inline f32 length(const Vector2& vec) { return lengthSquared(vec); }
+inline f32 length(const Vector2& vec) { return std::sqrtf(lengthSquared(vec)); }
 
-inline Vector2 normalized(const Vector2& vec)
+inline Vector2 normalize(const Vector2& vec)
 {
 	return vec * (1.0f / length(vec));
 }

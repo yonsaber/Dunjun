@@ -118,8 +118,8 @@ struct Vector4
 	{
 		x -= other.x;
 		y -= other.y;
-		z += other.z;
-		w += other.w;
+		z -= other.z;
+		w -= other.w;
 
 		return *this;
 	}
@@ -175,9 +175,9 @@ inline f32 dot(const Vector4& vec1, const Vector4& vec2)
 
 inline f32 lengthSquared(const Vector4& vec) { return dot(vec, vec); }
 
-inline f32 length(const Vector4& vec) { return lengthSquared(vec); }
+inline f32 length(const Vector4& vec) { return std::sqrtf(lengthSquared(vec)); }
 
-inline Vector4 normalized(const Vector4& vec)
+inline Vector4 normalize(const Vector4& vec)
 {
 	return vec * (1.0f / length(vec));
 }
